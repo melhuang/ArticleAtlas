@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
 
     private final String API_KEY = "11e60a434d9544c2991a82206639d180";
     private final String BASE_URL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+    private int pageCount = 0;
     List<Article> articleList;
     RecyclerView rvArticles;
     RecyclerView.Adapter articlesAdapter;
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
         String url = BASE_URL;
         RequestParams params = new RequestParams();
         params.put("q", "text from view");
+        params.put("page", pageCount);
         params.put("api-key", API_KEY);
         client.get(url, params, new TextHttpResponseHandler() {
             @Override
