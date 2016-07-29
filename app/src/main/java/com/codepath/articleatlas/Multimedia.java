@@ -8,6 +8,10 @@ public class Multimedia {
     int height;
     int width;
 
+    public Multimedia(String url) {
+        this.url = url;
+    }
+
     public Multimedia(String url, int height, int width) {
         this.url = url;
         this.height = height;

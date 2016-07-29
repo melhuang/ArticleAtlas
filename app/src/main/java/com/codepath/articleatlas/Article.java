@@ -1,6 +1,5 @@
 package com.codepath.articleatlas;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,6 +8,14 @@ import java.util.List;
 public class Article {
     Headline headline;
     List<Multimedia> multimedia;
+
+    public Headline getHeadline() {
+        return headline;
+    }
+
+    public List<Multimedia> getMultimedia() {
+        return multimedia;
+    }
 
     public Article(Headline headline, List<Multimedia> multimedia) {
         this.headline = headline;
