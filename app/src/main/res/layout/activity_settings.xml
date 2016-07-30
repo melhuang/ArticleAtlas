@@ -69,4 +69,14 @@
             android:layout_height="wrap_content"
             android:text="Sports" />
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/tvNews"
+        android:text="Save"
+        android:onClick="saveFilters"
+        android:layout_marginTop="20dp"/>
 </RelativeLayout>
