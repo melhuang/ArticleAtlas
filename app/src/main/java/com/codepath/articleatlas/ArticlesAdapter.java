@@ -80,12 +80,9 @@ public class ArticlesAdapter extends
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView, new ArticlesAdapter.ViewHolder.IMyViewHolderClicks() {
             public void onArticleClick(View view, int pos) {
-                if(mContext instanceof MainActivity){
-                    Article article = ((MainActivity)mContext).getArticleAtPosition(pos);
-                    System.out.println("wow: " + article.getWebUrl());
-                }
-                Intent i = new Intent(mContext, SettingsActivity.class);
-//                i.putExtra("myBook", book);
+                Article article = ((MainActivity)mContext).getArticleAtPosition(pos);
+                Intent i = new Intent(mContext, ArticleActivity.class);
+                i.putExtra("url", article.getWebUrl());
                 mContext.startActivity(i);
             }
         });
