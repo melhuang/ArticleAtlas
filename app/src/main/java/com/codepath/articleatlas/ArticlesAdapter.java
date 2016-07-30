@@ -1,6 +1,7 @@
 package com.codepath.articleatlas;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,21 +23,32 @@ public class ArticlesAdapter extends
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public ImageView thumbnailImageView;
         public TextView headlineTextView;
+        public IMyViewHolderClicks mListener;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, IMyViewHolderClicks listener) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
-
+            mListener = listener;
+            itemView.setOnClickListener(this);
             thumbnailImageView = (ImageView) itemView.findViewById(R.id.ivThumbnail);
             headlineTextView = (TextView) itemView.findViewById(R.id.tvHeadline);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mListener.onArticleClick(v);
+        }
+
+        public interface IMyViewHolderClicks {
+            void onArticleClick(View view);
         }
     }
 
@@ -66,7 +78,13 @@ public class ArticlesAdapter extends
         View contactView = inflater.inflate(R.layout.item_article, parent, false);
 
         // Return a new holder instance
-        ViewHolder viewHolder = new ViewHolder(contactView);
+        ViewHolder viewHolder = new ViewHolder(contactView, new ArticlesAdapter.ViewHolder.IMyViewHolderClicks() {
+            public void onArticleClick(View view) {
+                Intent i = new Intent(mContext, SettingsActivity.class);
+//                i.putExtra("myBook", book);
+                mContext.startActivity(i);
+            }
+        });
         return viewHolder;
     }
 
@@ -81,11 +99,9 @@ public class ArticlesAdapter extends
         textView.setText(article.getHeadline().getMain());
         ImageView imageView = viewHolder.thumbnailImageView;
         List<Multimedia> multimedia = article.getMultimedia();
-        System.out.println("multimedia: " + multimedia.size());
         if (multimedia.size() > 0) {
             String url = BASE_URL + article.getMultimedia().get(0).url;
             Picasso.with(getContext()).load(url).into(imageView);
-            System.out.println("media: " + url);
         }
     }
 
