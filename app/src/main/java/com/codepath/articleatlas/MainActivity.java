@@ -105,4 +105,8 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+    public Article getArticleAtPosition(int position) {
+        return articleList.get(position);
+    }
 }

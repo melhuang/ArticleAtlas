@@ -44,11 +44,11 @@ public class ArticlesAdapter extends
 
         @Override
         public void onClick(View v) {
-            mListener.onArticleClick(v);
+            mListener.onArticleClick(v, getAdapterPosition());
         }
 
         public interface IMyViewHolderClicks {
-            void onArticleClick(View view);
+            void onArticleClick(View view, int pos);
         }
     }
 
@@ -79,7 +79,11 @@ public class ArticlesAdapter extends
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView, new ArticlesAdapter.ViewHolder.IMyViewHolderClicks() {
-            public void onArticleClick(View view) {
+            public void onArticleClick(View view, int pos) {
+                if(mContext instanceof MainActivity){
+                    Article article = ((MainActivity)mContext).getArticleAtPosition(pos);
+                    System.out.println("wow: " + article.getWebUrl());
+                }
                 Intent i = new Intent(mContext, SettingsActivity.class);
 //                i.putExtra("myBook", book);
                 mContext.startActivity(i);
