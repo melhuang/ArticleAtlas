@@ -1,6 +1,7 @@
 package com.codepath.articleatlas;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -67,6 +68,9 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
+        if (item.getItemId() == R.id.action_settings) {
+            openSettings();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -91,7 +95,6 @@ public class MainActivity extends Activity {
                 // Handle resulting parsed JSON response here
                 Gson gson = new GsonBuilder().create();
                 articleList.addAll(ArticlesResponse.parseJSON(response).articleResponse.getArticleList());
-                System.out.println("size: " + articleList.size());
                 articlesAdapter.notifyItemRangeInserted(0, articleList.size());
             }
 
@@ -108,5 +111,10 @@ public class MainActivity extends Activity {
 
     public Article getArticleAtPosition(int position) {
         return articleList.get(position);
+    }
+
+    public void openSettings() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
     }
 }
