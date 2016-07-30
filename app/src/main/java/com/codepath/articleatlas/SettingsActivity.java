@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -32,6 +34,10 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, monthOfYear);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        System.out.println("calendar: " + c);
+        EditText beginDate = (EditText) findViewById(R.id.etBeginDate);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        beginDate.setText(dateFormat.format(c.getTime()));
     }
 }
