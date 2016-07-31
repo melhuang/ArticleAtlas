@@ -40,17 +40,28 @@ public class MainActivity extends Activity {
     private String beginDate;
     private String sortString;
     private ArrayList<String> newsList;
+    HashMap<String, Object> extraParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         newsList = new ArrayList<>();
+        extraParams  = new HashMap<>();
         setContentView(R.layout.activity_main);
         rvArticles = (RecyclerView) findViewById(R.id.rvArticles);
         articleList = new ArrayList<Article>();
         articlesAdapter = new ArticlesAdapter(this, articleList);
         rvArticles.setAdapter(articlesAdapter);
-        rvArticles.setLayoutManager(new GridLayoutManager(this, 3));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        rvArticles.setLayoutManager(layoutManager);
+        rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                fetchMore();
+            }
+        });
     }
 
     @Override
@@ -83,12 +94,13 @@ public class MainActivity extends Activity {
     }
 
     public void fetchTextAndSearch(View v) {
+        pageCount = 0;
         EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
-        fetchArticlesWithSearchQuery(searchField.getText().toString(), null);
+        fetchArticlesWithSearchQuery(searchField.getText().toString());
     }
 
     // Networking
-    private void fetchArticlesWithSearchQuery(String query, HashMap<String, Object> extraParams) {
+    private void fetchArticlesWithSearchQuery(String query) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = BASE_URL;
         RequestParams params = new RequestParams();
@@ -102,17 +114,17 @@ public class MainActivity extends Activity {
                 params.put(key, object);
             }
         }
-        System.out.println("params: " + params);
         client.get(url, params, new TextHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
                 // Root JSON in response is an dictionary i.e { "data : [ ... ] }
                 // Handle resulting parsed JSON response here
                 Gson gson = new GsonBuilder().create();
-                articleList.clear();
+                if (pageCount == 0) {
+                    articleList.clear();
+                }
                 articleList.addAll(ArticlesResponse.parseJSON(response).articleResponse.getArticleList());
                 articlesAdapter.notifyDataSetChanged();
-//                articlesAdapter.notifyItemRangeInserted(0, articleList.size());
             }
 
             @Override
@@ -137,7 +149,6 @@ public class MainActivity extends Activity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        HashMap<String, Object> params = new HashMap<>();
         if (resultCode == Activity.RESULT_OK) {
 
             if (data.getStringExtra("beginDate") != null) {
@@ -147,10 +158,10 @@ public class MainActivity extends Activity {
                 sortString = data.getStringExtra("sort");
             }
             if (beginDate != null) {
-                params.put("begin_date", beginDate);
+                extraParams.put("begin_date", beginDate);
             }
             if (sortString != null) {
-                params.put("sort", sortString);
+                extraParams.put("sort", sortString);
             }
 
             String[] newsArray = data.getStringArrayExtra("news");
@@ -163,12 +174,17 @@ public class MainActivity extends Activity {
             if (newsList.size() > 0) {
                 String filters = android.text.TextUtils.join(" ", newsList);
                 String newsString = "news_desk:(" + filters + ")";
-                System.out.println("newsString: " + newsString);
-                params.put("fq", newsString);
+                extraParams.put("fq", newsString);
             }
             EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
 
-            fetchArticlesWithSearchQuery(searchField.getText().toString(), params);
+            fetchArticlesWithSearchQuery(searchField.getText().toString());
         }
+    }
+
+    public void fetchMore() {
+        pageCount++;
+        EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
+        fetchArticlesWithSearchQuery(searchField.getText().toString());
     }
 }

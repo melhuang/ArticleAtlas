@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -8,9 +8,11 @@
 
     <ImageView
         android:id="@+id/ivThumbnail"
-        android:layout_width="40dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         />
 
     <TextView
@@ -18,6 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivThumbnail"
-        android:textSize="12sp"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:layout_centerVertical="true"
         />
-</LinearLayout>
+</RelativeLayout>
