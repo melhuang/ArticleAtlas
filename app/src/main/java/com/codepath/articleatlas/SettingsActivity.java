@@ -1,6 +1,8 @@
 package com.codepath.articleatlas;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -51,26 +53,34 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
     }
 
     public void saveFilters(View v) {
+
+        Intent i = new Intent(this, MainActivity.class);
         // fetch calendar date if !null
         if (date != null) {
-            // put the date into the intent
+            i.putExtra("beginDate", date);
         }
 
         Spinner sortSpinner = (Spinner) findViewById(R.id.sortSpinner);
         String sortString = sortSpinner.getSelectedItem().toString().toLowerCase();
 
+        i.putExtra("sort", sortString);
+
         List<String> newsList = new ArrayList<String>();
         CheckBox checkArts = (CheckBox) findViewById(R.id.cbArts);
         if (checkArts.isChecked()) {
-            newsList.add("Arts");
+            newsList.add("\"Arts\"");
         }
         CheckBox checkFashion = (CheckBox) findViewById(R.id.cbFashion);
         if (checkFashion.isChecked()) {
-            newsList.add("Fashion & Style");
+            newsList.add("\"Fashion & Style\"");
         }
         CheckBox checkSports = (CheckBox) findViewById(R.id.cbSports);
         if (checkSports.isChecked()) {
-            newsList.add("Sports");
+            newsList.add("\"Sports\"");
         }
+
+        i.putExtra("news", newsList.toArray(new String[0]));
+        setResult(Activity.RESULT_OK, i);
+        finish();
     }
 }

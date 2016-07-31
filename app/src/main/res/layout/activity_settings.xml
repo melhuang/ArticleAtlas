@@ -52,9 +52,10 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignTop="@id/tvNews"
         android:layout_toEndOf="@id/tvNews"
+        android:id="@+id/llCheckbox"
         android:layout_toRightOf="@id/tvNews">
         <CheckBox android:id="@+id/cbArts"
             android:layout_width="wrap_content"
@@ -75,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/tvNews"
+        android:layout_below="@id/llCheckbox"
         android:text="Save"
         android:onClick="saveFilters"
         android:layout_marginTop="20dp"/>

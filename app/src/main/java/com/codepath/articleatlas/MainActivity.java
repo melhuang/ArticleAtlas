@@ -19,7 +19,9 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -29,6 +31,7 @@ public class MainActivity extends Activity {
     private final String API_KEY = "11e60a434d9544c2991a82206639d180";
     private final String BASE_URL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
     private int pageCount = 0;
+    private final int SETTINGS_RESULT = 10;
     List<Article> articleList;
     RecyclerView rvArticles;
     RecyclerView.Adapter articlesAdapter;
@@ -76,26 +79,35 @@ public class MainActivity extends Activity {
 
     public void fetchTextAndSearch(View v) {
         EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
-        fetchArticlesWithSearchQuery(searchField.getText().toString());
+        fetchArticlesWithSearchQuery(searchField.getText().toString(), null);
     }
 
     // Networking
-    private void fetchArticlesWithSearchQuery(String query) {
+    private void fetchArticlesWithSearchQuery(String query, HashMap<String, Object> extraParams) {
         AsyncHttpClient client = new AsyncHttpClient();
-        EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
         String url = BASE_URL;
         RequestParams params = new RequestParams();
         params.put("q", query);
         params.put("page", pageCount);
         params.put("api-key", API_KEY);
+        if (extraParams != null)  {
+            for (Map.Entry<String, Object> entry : extraParams.entrySet()) {
+                String key = entry.getKey();
+                Object object = entry.getValue();
+                params.put(key, object);
+            }
+        }
+        System.out.println("params: " + params);
         client.get(url, params, new TextHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String response) {
                 // Root JSON in response is an dictionary i.e { "data : [ ... ] }
                 // Handle resulting parsed JSON response here
                 Gson gson = new GsonBuilder().create();
+                articleList.clear();
                 articleList.addAll(ArticlesResponse.parseJSON(response).articleResponse.getArticleList());
-                articlesAdapter.notifyItemRangeInserted(0, articleList.size());
+                articlesAdapter.notifyDataSetChanged();
+//                articlesAdapter.notifyItemRangeInserted(0, articleList.size());
             }
 
             @Override
@@ -115,6 +127,33 @@ public class MainActivity extends Activity {
 
     public void openSettings() {
         Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
+        startActivityForResult(i, SETTINGS_RESULT);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        HashMap<String, Object> params = new HashMap<>();
+        if (resultCode == Activity.RESULT_OK) {
+            String beginDate = data.getStringExtra("beginDate");
+            String sortString = data.getStringExtra("sort");
+            String[] newsArray = data.getStringArrayExtra("news");
+            if (beginDate != null) {
+                params.put("begin_date", beginDate);
+            }
+            if (sortString != null) {
+                params.put("sort", sortString);
+            }
+            System.out.println("newsArray: " + newsArray);
+
+            if (newsArray != null && newsArray.length > 0) {
+                String filters = android.text.TextUtils.join(" ", newsArray);
+                String newsString = "news_desk:(" + filters + ")";
+                System.out.println("newsString: " + newsString);
+                params.put("fq", newsString);
+            }
+            EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
+
+            fetchArticlesWithSearchQuery(searchField.getText().toString(), params);
+        }
     }
 }
