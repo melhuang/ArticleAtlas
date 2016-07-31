@@ -176,9 +176,7 @@ public class MainActivity extends Activity {
                 String newsString = "news_desk:(" + filters + ")";
                 extraParams.put("fq", newsString);
             }
-            EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
-
-            fetchArticlesWithSearchQuery(searchField.getText().toString());
+            fetchTextAndSearch(null);
         }
     }
 
