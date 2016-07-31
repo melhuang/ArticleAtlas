@@ -37,9 +37,14 @@ public class MainActivity extends Activity {
     RecyclerView.Adapter articlesAdapter;
     MenuItem miActionProgressItem;
 
+    private String beginDate;
+    private String sortString;
+    private ArrayList<String> newsList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        newsList = new ArrayList<>();
         setContentView(R.layout.activity_main);
         rvArticles = (RecyclerView) findViewById(R.id.rvArticles);
         articleList = new ArrayList<Article>();
@@ -134,19 +139,29 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         HashMap<String, Object> params = new HashMap<>();
         if (resultCode == Activity.RESULT_OK) {
-            String beginDate = data.getStringExtra("beginDate");
-            String sortString = data.getStringExtra("sort");
-            String[] newsArray = data.getStringArrayExtra("news");
+
+            if (data.getStringExtra("beginDate") != null) {
+                beginDate = data.getStringExtra("beginDate");
+            }
+            if (data.getStringExtra("sort") != null) {
+                sortString = data.getStringExtra("sort");
+            }
             if (beginDate != null) {
                 params.put("begin_date", beginDate);
             }
             if (sortString != null) {
                 params.put("sort", sortString);
             }
-            System.out.println("newsArray: " + newsArray);
 
-            if (newsArray != null && newsArray.length > 0) {
-                String filters = android.text.TextUtils.join(" ", newsArray);
+            String[] newsArray = data.getStringArrayExtra("news");
+            for (String newsString : newsArray) {
+                if (!newsList.contains(newsString)) {
+                    newsList.add(newsString);
+                }
+            }
+
+            if (newsList.size() > 0) {
+                String filters = android.text.TextUtils.join(" ", newsList);
                 String newsString = "news_desk:(" + filters + ")";
                 System.out.println("newsString: " + newsString);
                 params.put("fq", newsString);
