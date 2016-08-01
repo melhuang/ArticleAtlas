@@ -7,10 +7,9 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
@@ -38,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView.Adapter articlesAdapter;
     MenuItem miActionProgressItem;
 
+    private String searchQuery;
     private String beginDate;
     private String sortString;
     private ArrayList<String> newsList;
@@ -71,8 +71,29 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
-//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                pageCount = 0;
+                searchQuery = query;
+                // perform query here
+                fetchArticlesWithSearchQuery(query);
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
 
         // Store instance of the menu item containing progress
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
@@ -92,12 +113,6 @@ public class MainActivity extends AppCompatActivity {
             openSettings();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void fetchTextAndSearch(View v) {
-        pageCount = 0;
-        EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
-        fetchArticlesWithSearchQuery(searchField.getText().toString());
     }
 
     // Networking
@@ -177,13 +192,12 @@ public class MainActivity extends AppCompatActivity {
                 String newsString = "news_desk:(" + filters + ")";
                 extraParams.put("fq", newsString);
             }
-            fetchTextAndSearch(null);
+            fetchArticlesWithSearchQuery(searchQuery);
         }
     }
 
     public void fetchMore() {
         pageCount++;
-        EditText searchField = (EditText) findViewById(R.id.etSearchQuery);
-        fetchArticlesWithSearchQuery(searchField.getText().toString());
+        fetchArticlesWithSearchQuery(searchQuery);
     }
 }
