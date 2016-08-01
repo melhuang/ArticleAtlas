@@ -7,11 +7,9 @@ import java.util.List;
  */
 public class Article {
 
-
     String web_url;
     Headline headline;
     List<Multimedia> multimedia;
-
 
     public String getWebUrl() { return web_url; }
 

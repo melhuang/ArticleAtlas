@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -26,7 +27,7 @@ import java.util.Map;
 import cz.msebera.android.httpclient.Header;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private final String API_KEY = "11e60a434d9544c2991a82206639d180";
     private final String BASE_URL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
